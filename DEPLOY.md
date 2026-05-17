@@ -86,7 +86,7 @@ Workflow: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
 | Push в `ai` | Тесты → сборка образа → деплой на VPS |
 | `workflow_dispatch` | То же, что push в `ai` |
 
-Образ публикуется в **GitHub Container Registry**: `ghcr.io/<owner>/<repo>:<sha>`.
+На VPS выполняется `git pull` и локальная сборка Docker (`scripts/deploy.sh`).
 
 ### Секреты репозитория (Settings → Secrets and variables → Actions)
 
@@ -96,13 +96,6 @@ Workflow: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
 | `VPS_USER` | SSH-пользователь (например `deploy`) |
 | `VPS_SSH_KEY` | Приватный SSH-ключ (полностью, с `-----BEGIN...`) |
 | `VPS_DEPLOY_PATH` | Путь к проекту на сервере, например `/home/deploy/uni_edu_platform` |
-| `GHCR_READ_TOKEN` | GitHub PAT с правом `read:packages` для `docker pull` на VPS |
-
-### Environment `production` (рекомендуется)
-
-Settings → Environments → **production** → добавьте те же секреты (или только `VPS_*` / `GHCR_READ_TOKEN`).  
-Так деплой можно ограничить approval перед выкладкой.
-
 ### Первичная настройка VPS для CI
 
 ```bash
@@ -119,17 +112,6 @@ cp .env.prod.example .env && nano .env
 
 # Добавить публичный SSH-ключ GitHub Actions в ~/.ssh/authorized_keys
 ```
-
-### PAT для GHCR (`GHCR_READ_TOKEN`)
-
-GitHub → Settings → Developer settings → Personal access tokens:
-
-- Classic: scope `read:packages`
-- Или fine-grained: Packages → Read
-
-На VPS образ приватный — без токена `docker pull` не сработает.
-
-**Альтернатива:** сделать пакет публичным (Package settings → Change visibility) — тогда `GHCR_READ_TOKEN` не нужен.
 
 ### Проверка workflow
 
