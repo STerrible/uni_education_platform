@@ -1,5 +1,5 @@
-# Используем официальный образ Python 3.13
-FROM python:3.13-slim
+# Python 3.12 — стабильные wheels для pydantic/SQLAlchemy
+FROM python:3.12-slim
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
