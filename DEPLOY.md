@@ -39,17 +39,17 @@ docker compose -f docker-compose.prod.yml up -d --build
 ```bash
 sudo apt install -y nginx certbot python3-certbot-nginx
 
-# Замените api.example.com в конфиге на ваш домен
-sudo cp deploy/nginx/educational-platform.conf /etc/nginx/sites-available/educational-platform
-sudo nano /etc/nginx/sites-available/educational-platform
-sudo ln -sf /etc/nginx/sites-available/educational-platform /etc/nginx/sites-enabled/
+sudo cp deploy/nginx/educational-platform.conf /etc/nginx/sites-available/edu-platform
+sudo ln -sf /etc/nginx/sites-available/edu-platform /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 
-sudo certbot --nginx -d api.example.com
+sudo certbot --nginx -d edu-platform.thenetbase.com
 ```
 
-DNS: A-запись `api.example.com` → IP VPS.
+**Продакшен:** https://edu-platform.thenetbase.com/docs
+
+DNS: A-запись `edu-platform.thenetbase.com` → IP VPS.
 
 Firewall:
 
