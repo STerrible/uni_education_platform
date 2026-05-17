@@ -1,7 +1,9 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
 
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
     DATABASE_URL: str
     SECRET_KEY: str
     ALGORITHM: str
@@ -13,9 +15,6 @@ class Settings(BaseSettings):
     AI_BASE_URL: str = "https://openrouter.ai/api/v1"
     AI_MODEL: str = "mistralai/mistral-small-3.1-24b-instruct:free"
     AI_API_KEY: str | None = None
-
-    class Config:
-        env_file = ".env"
 
 # Эта функция нужна, чтобы настройки загружались только один раз
 @lru_cache()
