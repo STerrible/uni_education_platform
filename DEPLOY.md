@@ -14,7 +14,7 @@ cd uni_edu_platform
 
 # 3. Переменные окружения
 cp .env.prod.example .env
-nano .env   # задайте POSTGRES_PASSWORD, SECRET_KEY, DATABASE_URL (пароль в URL = POSTGRES_PASSWORD)
+nano .env   # задайте POSTGRES_PASSWORD, SECRET_KEY (DATABASE_URL собирается из POSTGRES_*)
 
 # Сгенерировать SECRET_KEY:
 python3 -c "import secrets; print(secrets.token_urlsafe(32))"
@@ -129,7 +129,7 @@ docker compose -f docker-compose.prod.yml exec db \
 | Файл | Назначение |
 |------|------------|
 | `docker-compose.prod.yml` | Прод: app + PostgreSQL |
-| `docker-compose.yml` | Локальная разработка (SQLite) |
+| `docker-compose.yml` | Локальная разработка (app + PostgreSQL) |
 | `.env.prod.example` | Шаблон `.env` для VPS |
 | `deploy/nginx/educational-platform.conf` | Reverse proxy |
 | `scripts/deploy.sh` | Сборка и запуск на сервере |

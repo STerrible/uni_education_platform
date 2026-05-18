@@ -1,13 +1,16 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
+
 
 # Ответ для курса (упрощённый для студента)
 class CourseStudentResponse(BaseModel):
     id: int
     title: str
-    description: Optional[str] = None
-    
+    description: str | None = None
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # Ответ для урока
 class LessonStudentResponse(BaseModel):
@@ -15,36 +18,41 @@ class LessonStudentResponse(BaseModel):
     title: str
     content: str
     course_id: int
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # Ответ для теста (БЕЗ правильного ответа!)
 class TestStudentResponse(BaseModel):
     id: int
     question: str
-    options: List[str]
+    options: list[str]
     # correct_answer скрыт от студента
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # Запрос на ответ теста
 class TestAnswerSubmit(BaseModel):
     answer: str
 
+
 # Результат проверки теста
 class TestResultResponse(BaseModel):
     test_id: int
     is_correct: bool
-    correct_answer: Optional[str] = None  # Показываем только если ответ неверный
-    
+    correct_answer: str | None = None  # Показываем только если ответ неверный
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # Мой курс с прогрессом
 class MyCourseResponse(BaseModel):
     course: CourseStudentResponse
     progress: float  # 0.0 - 100.0
-    
+
     model_config = ConfigDict(from_attributes=True)
+
 
 # Съема прогресса курса
 class CourseProgressResponse(BaseModel):
@@ -52,10 +60,9 @@ class CourseProgressResponse(BaseModel):
     course_title: str
     progress: float
     total_tests_passed: int = 0  # Заглушка, можно доработать позже
-    
+
     model_config = ConfigDict(from_attributes=True)
 
-from datetime import datetime
 
 class TestResultHistory(BaseModel):
     test_id: int
@@ -66,11 +73,12 @@ class TestResultHistory(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class GeneratedTestQuestion(BaseModel):
     question: str
-    options: List[str]
+    options: list[str]
     correct_answer: str
-    source_lesson_id: Optional[int] = None
+    source_lesson_id: int | None = None
 
 
 class PersonalTestGenerateRequest(BaseModel):
@@ -80,5 +88,5 @@ class PersonalTestGenerateRequest(BaseModel):
 
 class PersonalTestGenerateResponse(BaseModel):
     course_id: int
-    based_on_lessons: List[int]
-    questions: List[GeneratedTestQuestion]
+    based_on_lessons: list[int]
+    questions: list[GeneratedTestQuestion]

@@ -1,9 +1,11 @@
-from sqlalchemy import Column, Integer, ForeignKey, Boolean, String, DateTime, func
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, func
+
 from app.core.database import Base
+
 
 class UserTestResult(Base):
     __tablename__ = "user_test_results"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     test_id = Column(Integer, ForeignKey("tests.id"), nullable=False)

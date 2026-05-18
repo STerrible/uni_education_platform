@@ -1,14 +1,16 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
+
 
 class LessonCreate(BaseModel):
     title: str
     content: str
     course_id: int
 
+
 class LessonUpdate(BaseModel):
-    title: Optional[str] = None
-    content: Optional[str] = None
+    title: str | None = None
+    content: str | None = None
+
 
 class LessonResponse(BaseModel):
     id: int

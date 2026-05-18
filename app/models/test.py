@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, JSON
+from sqlalchemy import JSON, Column, Integer, String, Text
+
 from app.core.database import Base
+
 
 class Test(Base):
     __tablename__ = "tests"

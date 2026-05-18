@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, ForeignKey, Float
+from sqlalchemy import Column, Float, ForeignKey, Integer
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
+
 
 class UserCourse(Base):
     __tablename__ = "user_courses"

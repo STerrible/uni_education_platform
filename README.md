@@ -1,244 +1,104 @@
-### Структура проекта
-```
-educational_platform/
-├── app/
-│   ├── api/              # API endpoints (роуты)
-│   │   ├── __init__.py
-│   │   ├── auth.py       # Аутентификация (регистрация, логин, смена пароля)
-│   │   ├── courses.py    # CRUD курсов (админ + студент)
-│   │   ├── lessons.py    # CRUD уроков
-│   │   ├── students.py   # Студенческий API (запись, тесты, прогресс)
-│   │   ├── tests.py      # CRUD тестов
-│   │   └── __init__.py
-│   │
-│   ├── core/             # Ядро приложения
-│   │   ├── config.py     # Настройки (из .env)
-│   │   ├── database.py   # Подключение к БД, сессии
-│   │   ├── deps.py       # Зависимости (get_db, get_current_user)
-│   │   └── security.py   # Хеширование паролей, JWT токены
-│   │
-│   ├── models/           # SQLAlchemy модели (таблицы БД)
-│   │   ├── __init__.py
-│   │   ├── course.py     # Course, Lesson, Test
-│   │   ├── test_result.py # UserTestResult (история тестов)
-│   │   ├── user.py       # User
-│   │   └── user_course.py # UserCourse (прогресс)
-│   │
-│   ├── schemas/          # Pydantic схемы (валидация)
-│   │   ├── __init__.py
-│   │   ├── course.py     # CourseCreate, CourseResponse
-│   │   ├── lesson.py     # LessonCreate, LessonResponse
-│   │   ├── student.py    # TestAnswerSubmit, TestResultHistory
-│   │   ├── test.py       # TestCreate, TestResponse
-│   │   └── user.py       # UserCreate, UserResponse, Token
-│   │
-│   └── main.py           # Точка входа, подключение роутеров
-│
-├── alembic/              # Миграции БД
-│   ├── versions/         # Файлы миграций
-│   ├── env.py            # Настройка Alembic
-│   └── script.py.mako
-│
-├── tests/                # Тесты (pytest)
-│   ├── test_auth.py      # Тесты аутентификации
-│   ├── test_courses.py   # Тесты курсов
-│   └── conftest.py       # Фикстуры для тестов
-│
-├── .env                  # Переменные окружения (НЕ коммитить!)
-├── .env.example          # Шаблон переменных (можно коммитить)
-├── .gitignore            # Игнорируемые файлы
-├── alembic.ini           # Настройки Alembic
-├── docker-compose.yml    # Docker Compose конфигурация
-├── Dockerfile            # Docker образ
-├── requirements.txt      # Python зависимости
-├── README.md             # Основная документация
-└── DEVELOPMENT.md        # Этот файл
+# Uni Edu Platform (Backend)
+
+Backend учебной платформы на FastAPI.
+
+## Что реализовано
+
+- Аутентификация: регистрация, логин, смена пароля, refresh token
+- Админ CRUD: курсы, уроки, тесты
+- Студенческий API: каталог, запись на курс, прохождение тестов, прогресс, история
+- Миграции через Alembic
+
+## Технологии
+
+- Python 3.12
+- FastAPI
+- SQLAlchemy + Alembic
+- PostgreSQL
+- uv (зависимости и запуск)
+- Ruff + Pyright
+- Pytest + testcontainers-python
+
+## Быстрый старт (локально)
+
+1. Подготовить окружение:
+
+```bash
+cp .env.example .env
+uv sync --python 3.12
 ```
 
-###  Где что реализован
+1. Запустить БД и приложение в Docker:
 
-####  Файлы:
-1. app/api/auth.py — эндпоинты (register, login, change-password, refresh-token)
-2. app/core/security.py — функции безопасности:
-3. verify_password() — проверка пароля
-4. get_password_hash() — хеширование
-5. create_access_token() — создание JWT
-6. get_current_user() — получение текущего пользователя из токена
-7. app/models/user.py — модель User
-8. app/schemas/user.py — схемы (UserCreate, UserResponse, Token)
-
-####  Как добавить новую функцию:
-1. Добавь эндпоинт в app/api/auth.py
-2. При необходимости создай схему в app/schemas/user.py
-3. Используй get_current_user для защиты роута
-
-### Админ-панель (CRUD)
-####  Курсы
-####  Файл: app/api/courses.py
-- POST /api/v1/admin/courses — создание
-- GET /api/v1/admin/courses — список
-- GET /api/v1/admin/courses/{id} — получение
-- PUT /api/v1/admin/courses/{id} — обновление
-- DELETE /api/v1/admin/courses/{id} — удаление
-####  Модель: app/models/course.py (класс Course)
-####  Схемы: app/schemas/course.py (CourseCreate, CourseUpdate, CourseResponse)
-
-###  Уроки
-####  Файл: app/api/lessons.py
-- Все CRUD операции для уроков
-####  Модель: app/models/course.py (класс Lesson)
-####  Схемы: app/schemas/lesson.py
-
-###  Тесты
-####  Файл: app/api/tests.py
-- Все CRUD операции для тестов
-####  Модель: app/models/course.py (класс Test)
-####  Схемы: app/schemas/test.py
-
-
-###  Студенческий API
-####  Файл: app/api/students.py
-####  Эндпоинты:
-- GET /api/v1/student/courses — каталог курсов
-- GET /api/v1/student/courses/{id} — детали курса
-- GET /api/v1/student/lessons/{id} — получение урока
-- GET /api/v1/student/tests/{id} — получение теста
-- POST /api/v1/student/courses/{id}/enroll — запись на курс
-- POST /api/v1/student/tests/{id}/submit — отправка ответа (с сохранением в историю)
-- GET /api/v1/student/my-courses — мои курсы с прогрессом
-- GET /api/v1/student/test-history — история результатов тестов
-
-####  Модели:
-- app/models/user_course.py — UserCourse (связь пользователь-курс + прогресс)
-- app/models/test_result.py — UserTestResult (история тестов)
-####  Схемы: app/schemas/student.py
-
-### База данных
-
-####  Подключение: app/core/database.py
-```
-engine = create_engine(settings.DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+```bash
+docker compose up -d db app
 ```
 
-####  Модели (таблицы):
-- app/models/user.py → таблица users
-- app/models/course.py → таблицы courses, lessons, tests
-- app/models/user_course.py → таблица user_courses
-- app/models/test_result.py → таблица user_test_results
+1. Применить миграции:
 
-####  Миграции:
-- Создание: alembic revision --autogenerate -m "description"
-- Применение: alembic upgrade head
-- Откат: alembic downgrade -1
-
-###  Конфигурация
-####  Файл: app/core/config.py
-
-####  Как добавить новую переменную:
-- Добавь в .env.example: NEW_VAR=value
-- Добавь в app/core/config.py:
-
-```
-class Settings(BaseSettings):
-    NEW_VAR: str = "default"
+```bash
+uv run alembic upgrade head
 ```
 
-###  Тестирование
+API будет доступен на `http://localhost:8000`, документация: `http://localhost:8000/docs`.
 
-####  Файлы:
-- tests/test_auth.py — тесты регистрации, логина
-- tests/test_courses.py — тесты курсов
-- tests/conftest.py — фикстуры (тестовая БД, клиент)
+## Запуск без Docker (только приложение)
 
-####  Запуск:
-```
-pytest tests/ -v                    # Все тесты
-pytest tests/test_auth.py -v        # Конкретный файл
-pytest tests/ -v --cov=app          # С покрытием
+Если PostgreSQL уже доступен отдельно:
+
+```bash
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-####  Как добавить тест:
-1. Создай файл tests/test_feature.py
-2. Используй фикстуры из conftest.py
+## Основные команды
 
-```
-def test_something(client, test_db):
-    response = client.post("/api/v1/auth/login", data={...})
-    assert response.status_code == 200
-```
+```bash
+make up           # or: docker compose up -d db app
+make up-build     # or: docker compose up -d --build db app
+make up-db        # or: docker compose up -d db
+make down         # or: docker compose down
+make ps           # or: docker compose ps db app
+make logs         # or: docker compose logs -f db app
 
-### Как добавить новую функцию
-
-#### Пример: Добавить рейтинг курсов
-1. Создай модель (app/models/course.py):
-```
-class CourseRating(Base):
-    __tablename__ = "course_ratings"
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    course_id = Column(Integer, ForeignKey("courses.id"))
-    rating = Column(Integer)  # 1-5
+make migrate      # or: uv run alembic upgrade head
+make test         # or: uv run pytest -q
+make lint         # or: uv run ruff format . && uv run ruff check --fix .
+make typecheck    # or: uv run pyright
+make run          # or: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-2. Создай схему (app/schemas/course.py):
-```
-class CourseRatingCreate(BaseModel):
-    rating: int = Field(..., ge=1, le=5)
+## Тесты
 
-class CourseRatingResponse(BaseModel):
-    course_id: int
-    user_id: int
-    rating: int
-```
+Тесты используют `testcontainers-python` и поднимают временный контейнер PostgreSQL автоматически.
 
-3. Добавь эндпоинт (app/api/courses.py):
-```
-@router.post("/admin/courses/{course_id}/rate")
-def rate_course(
-    course_id: int,
-    rating_data: CourseRatingCreate,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    rating = CourseRating(
-        user_id=current_user.id,
-        course_id=course_id,
-        rating=rating_data.rating
-    )
-    db.add(rating)
-    db.commit()
-    return {"message": "Рейтинг добавлен"}
+Требования:
+- запущенный Docker daemon
+
+Запуск:
+
+```bash
+uv run pytest -q
 ```
 
-4. Создай миграцию:
+## Переменные окружения
+
+Обязательные переменные описаны в `.env.example`.
+
+`DATABASE_URL` явно задавать не нужно: приложение собирает его из `POSTGRES_*`.
+
+## Структура проекта
+
+```text
+app/
+  api/           # роуты
+  core/          # конфиг, БД, зависимости, security
+  models/        # SQLAlchemy модели
+  schemas/       # Pydantic схемы
+  services/      # прикладные сервисы
+alembic/         # миграции
+tests/           # тесты
 ```
-alembic revision --autogenerate -m "add course ratings"
-alembic upgrade head
-```
 
-5. Добавь тест (tests/test_ratings.py)
+## Дополнительные документы
 
-### Полезные команды
-```
-# Активация venv
-.\venv\Scripts\Activate.ps1
-
-# Установка зависимостей
-pip install -r requirements.txt
-
-# Запуск сервера
-uvicorn app.main:app --reload --port 8001
-
-# Проверка таблиц в БД
-python -c "from app.core.database import SessionLocal; from sqlalchemy import inspect; db = SessionLocal(); print(inspect(db.bind).get_table_names())"
-
-# Создание суперпользователя
-python make_admin.py
-
-# Просмотр текущей миграции
-alembic current
-
-# Откат последней миграции
-alembic downgrade -1
-```
+- `DEPLOY.md` — деплой и эксплуатация

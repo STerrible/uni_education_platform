@@ -1,5 +1,5 @@
 # === PYTHON ===
-__pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 *.so
@@ -40,3 +40,5 @@ Thumbs.db
 
 # === LOGS ===
 *.log
+
+.cache
