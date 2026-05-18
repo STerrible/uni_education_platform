@@ -64,7 +64,7 @@ sudo ufw enable
 
 ## Обновление версии
 
-**Автоматически:** push в ветку `ai` → GitHub Actions собирает образ и деплоит на VPS.
+**Автоматически:** push в ветку `main` → GitHub Actions собирает образ и деплоит на VPS.
 
 **Вручную:**
 
@@ -82,9 +82,9 @@ Workflow: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
 
 | Событие | Действие |
 |---------|----------|
-| Pull Request в `ai` | Тесты (`pytest`) |
-| Push в `ai` | Тесты → сборка образа → деплой на VPS |
-| `workflow_dispatch` | То же, что push в `ai` |
+| Pull Request в `main` | Тесты (`pytest`) |
+| Push в `main` | Тесты → сборка образа → деплой на VPS |
+| `workflow_dispatch` | То же, что push в `main` |
 
 На VPS выполняется `git pull` и локальная сборка Docker (`scripts/deploy.sh`).
 
@@ -116,7 +116,7 @@ cp .env.prod.example .env && nano .env
 
 ### Проверка workflow
 
-После push в `ai`: вкладка **Actions** в репозитории. Успешный деплой: `curl -s http://127.0.0.1:8001/docs` на сервере.
+После push в `main`: вкладка **Actions** в репозитории. Успешный деплой: `curl -s http://127.0.0.1:8001/docs` на сервере.
 
 ## Бэкап PostgreSQL
 
