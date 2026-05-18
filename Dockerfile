@@ -14,6 +14,8 @@ RUN uv sync --frozen --no-dev
 # Копируем весь код приложения
 COPY . .
 
+RUN chmod +x scripts/entrypoint.sh
+
 # Открываем порт 8000 (внутри контейнера)
 EXPOSE 8000
 

@@ -2,10 +2,13 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ai]
+    branches: [main]
   pull_request:
-    branches: [ai]
+    branches: [main]
   workflow_dispatch:
+
+env:
+  DEPLOY_BRANCH: main
 
 jobs:
   test:
@@ -62,8 +65,8 @@ jobs:
           script: |
             set -euo pipefail
             cd "${{ secrets.VPS_DEPLOY_PATH }}"
-            git fetch origin ai
-            git checkout ai
-            git pull --ff-only origin ai
+            git fetch origin main
+            git checkout main
+            git pull --ff-only origin main
             chmod +x scripts/deploy.sh
             ./scripts/deploy.sh

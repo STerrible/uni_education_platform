@@ -47,7 +47,7 @@ sudo nginx -t && sudo systemctl reload nginx
 sudo certbot --nginx -d edu-platform.thenetbase.com
 ```
 
-**Продакшен:** https://edu-platform.thenetbase.com/docs
+**Продакшен:** <https://edu-platform.thenetbase.com/docs>
 
 DNS: A-запись `edu-platform.thenetbase.com` → IP VPS.
 
@@ -96,6 +96,7 @@ Workflow: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
 | `VPS_USER` | SSH-пользователь (например `deploy`) |
 | `VPS_SSH_KEY` | Приватный SSH-ключ (полностью, с `-----BEGIN...`) |
 | `VPS_DEPLOY_PATH` | Путь к проекту на сервере, например `/home/deploy/uni_edu_platform` |
+
 ### Первичная настройка VPS для CI
 
 ```bash

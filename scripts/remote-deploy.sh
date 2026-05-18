@@ -12,10 +12,12 @@ if [[ ! -f .env ]]; then
   exit 1
 fi
 
+BRANCH="${DEPLOY_BRANCH:-main}"
+
 if [[ -d .git ]]; then
-  git fetch origin ai
-  git checkout ai
-  git pull --ff-only origin ai
+  git fetch origin "$BRANCH"
+  git checkout "$BRANCH"
+  git pull --ff-only origin "$BRANCH"
 fi
 
 export DOCKER_IMAGE="$IMAGE"

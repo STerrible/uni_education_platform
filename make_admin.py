@@ -2,21 +2,21 @@ from app.core.database import SessionLocal
 from app.models.user import User
 
 
-def promote_to_admin():
+def make_admin():
     db = SessionLocal()
     try:
-        # Находим пользователя student1
-        user = db.query(User).filter(User.username == "student1").first()
+        username = input("Введите username пользователя, которого нужно сделать админом: ")
+        user = db.query(User).filter(User.username == username).first()
 
         if user:
-            user.is_superuser = True  # Делаем админом
+            user.is_superuser = True
             db.commit()
-            print(f"✅ Успешно! Пользователь {user.username} теперь АДМИНИСТРАТОР!")
+            print(f"✅ Пользователь '{username}' теперь администратор!")
         else:
-            print("❌ Пользователь student1 не найден. Сначала зарегистрируйся через API.")
+            print(f"❌ Пользователь '{username}' не найден.")
     finally:
         db.close()
 
 
 if __name__ == "__main__":
-    promote_to_admin()
+    make_admin()
