@@ -27,6 +27,17 @@ from app.services.personal_test_generator import generate_personal_questions
 router = APIRouter(prefix="/api/v1/student", tags=["Student"])
 
 
+def _get_enrollment_or_403(db: Session, user_id: int, course_id: int) -> UserCourse:
+    enrollment = (
+        db.query(UserCourse)
+        .filter(UserCourse.user_id == user_id, UserCourse.course_id == course_id)
+        .first()
+    )
+    if not enrollment:
+        raise HTTPException(status_code=403, detail="Сначала запишитесь на курс")
+    return enrollment
+
+
 # 1. Каталог всех курсов
 @router.get("/courses", response_model=list[CourseStudentResponse])
 def get_courses(db: Session = Depends(get_db)):
@@ -35,10 +46,13 @@ def get_courses(db: Session = Depends(get_db)):
 
 # 2. Детали курса + список уроков
 @router.get("/courses/{course_id}", response_model=dict)
-def get_course_details(course_id: int, db: Session = Depends(get_db)):
+def get_course_details(
+    course_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     course = db.query(Course).filter(Course.id == course_id).first()
     if not course:
         raise HTTPException(status_code=404, detail="Курс не найден")
+    _get_enrollment_or_403(db, cast(int, current_user.id), course_id)
 
     lessons = db.query(Lesson).filter(Lesson.course_id == course_id).all()
     return {
@@ -49,10 +63,37 @@ def get_course_details(course_id: int, db: Session = Depends(get_db)):
 
 # 3. Получить конкретный урок
 @router.get("/lessons/{lesson_id}", response_model=LessonStudentResponse)
-def get_lesson(lesson_id: int, db: Session = Depends(get_db)):
+def get_lesson(
+    lesson_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
     if not lesson:
         raise HTTPException(status_code=404, detail="Урок не найден")
+    course_id = cast(int, lesson.course_id)
+    _get_enrollment_or_403(db, cast(int, current_user.id), course_id)
+
+    ordered_lessons = (
+        db.query(Lesson).filter(Lesson.course_id == course_id).order_by(Lesson.id.asc()).all()
+    )
+    lesson_ids = [cast(int, ls.id) for ls in ordered_lessons]
+    current_index = lesson_ids.index(cast(int, lesson.id))
+    if current_index > 0:
+        prev_lesson = ordered_lessons[current_index - 1]
+        if prev_lesson.test_id is not None:
+            prev_passed = (
+                db.query(UserTestResult)
+                .filter(
+                    UserTestResult.user_id == current_user.id,
+                    UserTestResult.test_id == prev_lesson.test_id,
+                    UserTestResult.is_correct.is_(True),
+                )
+                .first()
+            )
+            if not prev_passed:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Сначала завершите предыдущий урок и его тест",
+                )
     return lesson
 
 
@@ -109,8 +150,12 @@ def submit_test_answer(
     )
     db.add(result)
 
+    lesson = db.query(Lesson).filter(Lesson.test_id == test_id).first()
+    if not lesson:
+        raise HTTPException(status_code=400, detail="Тест не привязан к уроку")
+    enrollment = _get_enrollment_or_403(db, cast(int, current_user.id), cast(int, lesson.course_id))
+
     # Обновляем прогресс курса (упрощённо: +5% за правильный ответ)
-    enrollment = db.query(UserCourse).filter(UserCourse.user_id == current_user.id).first()
     if enrollment and is_correct:
         current_progress = cast(float, enrollment.progress)
         cast(Any, enrollment).progress = min(100.0, current_progress + 5.0)

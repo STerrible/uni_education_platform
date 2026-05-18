@@ -18,6 +18,7 @@ class LessonStudentResponse(BaseModel):
     title: str
     content: str
     course_id: int
+    test_id: int | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

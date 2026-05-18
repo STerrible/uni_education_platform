@@ -13,6 +13,7 @@ class Lesson(Base):
 
     # Внешний ключ: урок принадлежит курсу
     course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    test_id = Column(Integer, ForeignKey("tests.id"), nullable=True)
 
     # Связи
     course = relationship("Course", back_populates="lessons")
