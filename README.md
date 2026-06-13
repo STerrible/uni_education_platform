@@ -1,6 +1,6 @@
-# Uni Edu Platform (Backend)
+# Uni Edu Platform
 
-Backend учебной платформы на FastAPI.
+Учебная платформа с backend на FastAPI и frontend на React.
 
 ## Что реализовано
 
@@ -9,6 +9,8 @@ Backend учебной платформы на FastAPI.
 - Связь урока с тестом: `lesson.test_id` (опционально)
 - Студенческий API: каталог, запись на курс, последовательное прохождение уроков, тесты, прогресс, история
 - Миграции через Alembic
+- React-фронтенд: маршрутизация, авторизация, каталог курсов, личный кабинет
+- Docker/Nginx-раздача статического frontend-приложения
 
 ## Логика прохождения курса
 
@@ -62,6 +64,7 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ```bash
 make up           # or: docker compose up -d db app
+docker compose up -d --build frontend  # frontend на http://localhost:8080
 make up-build     # or: docker compose up -d --build db app
 make up-db        # or: docker compose up -d db
 make down         # or: docker compose down
@@ -104,7 +107,8 @@ app/
   schemas/       # Pydantic схемы
   services/      # прикладные сервисы
 alembic/         # миграции
-tests/           # тесты
+tests/           # backend-тесты
+frontend/        # React-приложение, RTL/Vitest-тесты, Dockerfile и Nginx
 ```
 
 ## Дополнительные документы
