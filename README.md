@@ -38,19 +38,37 @@ cp .env.example .env
 uv sync --python 3.12
 ```
 
-1. Запустить БД и приложение в Docker:
+2. Запустить БД и приложение в Docker:
 
 ```bash
-docker compose up -d db app
+docker compose up -d
 ```
 
-1. Применить миграции:
+3. Применить миграции:
 
 ```bash
 uv run alembic upgrade head
 ```
 
+4. Заполнить базу данных тестовыми данными (опционально):
+
+```bash
+uv run python seed.py
+```
+
 API будет доступен на `http://localhost:8000`, документация: `http://localhost:8000/docs`.
+Frontend будет доступен на `http://localhost:8080`.
+
+## Тестовые профили для входа
+
+После заполнения базы данных тестовыми данными (команда `make seed` или `uv run python seed.py`) вы можете использовать следующие учетные записи для входа в приложение:
+
+- **Профиль студента (для прохождения курсов, уроков и тестов):**
+  - **Логин:** `student`
+  - **Пароль:** `studentpass`
+- **Профиль администратора:**
+  - **Логин:** `admin`
+  - **Пароль:** `adminpass`
 
 ## Запуск без Docker (только приложение)
 
@@ -63,15 +81,17 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ## Основные команды
 
 ```bash
-make up           # or: docker compose up -d db app
+make up           # or: docker compose up -d
 docker compose up -d --build frontend  # frontend на http://localhost:8080
-make up-build     # or: docker compose up -d --build db app
+make up-build     # or: docker compose up -d --build
 make up-db        # or: docker compose up -d db
 make down         # or: docker compose down
-make ps           # or: docker compose ps db app
-make logs         # or: docker compose logs -f db app
+make ps           # or: docker compose ps
+make logs         # or: docker compose logs
 
 make migrate      # or: uv run alembic upgrade head
+make seed         # заполнить БД тестовыми данными
+make openapi      # сгенерировать openapi.yaml
 make test         # or: uv run pytest -q
 make lint         # or: uv run ruff format . && uv run ruff check --fix .
 make typecheck    # or: uv run pyright

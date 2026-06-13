@@ -1,16 +1,18 @@
 services:
   app:
     build: .
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
     env_file: .env
     ports:
-      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
+      - "${APP_PORT:-8000}:8000"
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test:
-        ["CMD-SHELL", "wget --spider -q http://localhost:$${APP_PORT:-8000}/health"]
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health\")'"]
       interval: 10s
       timeout: 5s
       retries: 3

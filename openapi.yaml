@@ -1,0 +1,1238 @@
+openapi: 3.1.0
+info:
+  title: Educational Platform
+  version: 1.0.0
+paths:
+  /api/v1/auth/register:
+    post:
+      tags:
+      - Auth
+      summary: Register
+      operationId: register_api_v1_auth_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/login:
+    post:
+      tags:
+      - Auth
+      summary: Login
+      operationId: login_api_v1_auth_login_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_login_api_v1_auth_login_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/change-password:
+    post:
+      tags:
+      - Auth
+      summary: Change Password
+      description: Смена пароля авторизованным пользователем
+      operationId: change_password_api_v1_auth_change_password_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_change_password_api_v1_auth_change_password_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/auth/refresh-token:
+    post:
+      tags:
+      - Auth
+      summary: Refresh Token
+      description: Обновление access-токена
+      operationId: refresh_token_api_v1_auth_refresh_token_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/admin/courses:
+    post:
+      tags:
+      - 'Admin: Courses'
+      summary: Create Course
+      operationId: create_course_api_v1_admin_courses_post
+      security:
+      - OAuth2PasswordBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - 'Admin: Courses'
+      summary: List Courses
+      operationId: list_courses_api_v1_admin_courses_get
+      parameters:
+      - name: skip
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Skip
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 10
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseResponse'
+                title: Response List Courses Api V1 Admin Courses Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/admin/courses/{course_id}:
+    get:
+      tags:
+      - 'Admin: Courses'
+      summary: Get Course
+      operationId: get_course_api_v1_admin_courses__course_id__get
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Course Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - 'Admin: Courses'
+      summary: Update Course
+      operationId: update_course_api_v1_admin_courses__course_id__put
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Course Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - 'Admin: Courses'
+      summary: Delete Course
+      operationId: delete_course_api_v1_admin_courses__course_id__delete
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Course Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/admin/lessons:
+    get:
+      tags:
+      - 'Admin: Lessons'
+      summary: List Lessons
+      operationId: list_lessons_api_v1_admin_lessons_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/LessonResponse'
+                type: array
+                title: Response List Lessons Api V1 Admin Lessons Get
+    post:
+      tags:
+      - 'Admin: Lessons'
+      summary: Create Lesson
+      operationId: create_lesson_api_v1_admin_lessons_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LessonCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/admin/lessons/{lesson_id}:
+    get:
+      tags:
+      - 'Admin: Lessons'
+      summary: Get Lesson
+      operationId: get_lesson_api_v1_admin_lessons__lesson_id__get
+      parameters:
+      - name: lesson_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Lesson Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - 'Admin: Lessons'
+      summary: Update Lesson
+      operationId: update_lesson_api_v1_admin_lessons__lesson_id__put
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: lesson_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Lesson Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LessonUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - 'Admin: Lessons'
+      summary: Delete Lesson
+      operationId: delete_lesson_api_v1_admin_lessons__lesson_id__delete
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: lesson_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Lesson Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/admin/tests:
+    get:
+      tags:
+      - 'Admin: Tests'
+      summary: List Tests
+      operationId: list_tests_api_v1_admin_tests_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TestResponse'
+                type: array
+                title: Response List Tests Api V1 Admin Tests Get
+    post:
+      tags:
+      - 'Admin: Tests'
+      summary: Create Test
+      operationId: create_test_api_v1_admin_tests_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/admin/tests/{test_id}:
+    get:
+      tags:
+      - 'Admin: Tests'
+      summary: Get Test
+      operationId: get_test_api_v1_admin_tests__test_id__get
+      parameters:
+      - name: test_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Test Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - 'Admin: Tests'
+      summary: Update Test
+      operationId: update_test_api_v1_admin_tests__test_id__put
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: test_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Test Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - 'Admin: Tests'
+      summary: Delete Test
+      operationId: delete_test_api_v1_admin_tests__test_id__delete
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: test_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Test Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/student/courses:
+    get:
+      tags:
+      - Student
+      summary: Get Courses
+      operationId: get_courses_api_v1_student_courses_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CourseStudentResponse'
+                type: array
+                title: Response Get Courses Api V1 Student Courses Get
+  /api/v1/student/courses/{course_id}:
+    get:
+      tags:
+      - Student
+      summary: Get Course Details
+      operationId: get_course_details_api_v1_student_courses__course_id__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Course Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Get Course Details Api V1 Student Courses  Course
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/student/lessons/{lesson_id}:
+    get:
+      tags:
+      - Student
+      summary: Get Lesson
+      operationId: get_lesson_api_v1_student_lessons__lesson_id__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: lesson_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Lesson Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonStudentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/student/tests/{test_id}:
+    get:
+      tags:
+      - Student
+      summary: Get Test
+      operationId: get_test_api_v1_student_tests__test_id__get
+      parameters:
+      - name: test_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Test Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestStudentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/student/courses/{course_id}/enroll:
+    post:
+      tags:
+      - Student
+      summary: Enroll Course
+      operationId: enroll_course_api_v1_student_courses__course_id__enroll_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Course Id
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/student/tests/{test_id}/submit:
+    post:
+      tags:
+      - Student
+      summary: Submit Test Answer
+      operationId: submit_test_answer_api_v1_student_tests__test_id__submit_post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: test_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Test Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestAnswerSubmit'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResultResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/student/my-courses:
+    get:
+      tags:
+      - Student
+      summary: Get My Courses
+      operationId: get_my_courses_api_v1_student_my_courses_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MyCourseResponse'
+                type: array
+                title: Response Get My Courses Api V1 Student My Courses Get
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/student/test-history:
+    get:
+      tags:
+      - Student
+      summary: Get Test History
+      description: Просмотр оценок за пройденные тесты
+      operationId: get_test_history_api_v1_student_test_history_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TestResultHistory'
+                type: array
+                title: Response Get Test History Api V1 Student Test History Get
+      security:
+      - OAuth2PasswordBearer: []
+  /api/v1/student/personal-tests/generate:
+    post:
+      tags:
+      - Student
+      summary: Generate Personal Test
+      operationId: generate_personal_test_api_v1_student_personal_tests_generate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalTestGenerateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalTestGenerateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - OAuth2PasswordBearer: []
+  /:
+    get:
+      summary: Root
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /health:
+    get:
+      summary: Health Check
+      operationId: health_check_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    Body_change_password_api_v1_auth_change_password_post:
+      properties:
+        current_password:
+          type: string
+          title: Current Password
+        new_password:
+          type: string
+          title: New Password
+      type: object
+      required:
+      - current_password
+      - new_password
+      title: Body_change_password_api_v1_auth_change_password_post
+    Body_login_api_v1_auth_login_post:
+      properties:
+        grant_type:
+          anyOf:
+          - type: string
+            pattern: password
+          - type: 'null'
+          title: Grant Type
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+        scope:
+          type: string
+          title: Scope
+          default: ''
+        client_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Id
+        client_secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Secret
+      type: object
+      required:
+      - username
+      - password
+      title: Body_login_api_v1_auth_login_post
+    CourseCreate:
+      properties:
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      required:
+      - title
+      title: CourseCreate
+    CourseResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      required:
+      - id
+      - title
+      title: CourseResponse
+    CourseStudentResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      required:
+      - id
+      - title
+      title: CourseStudentResponse
+    CourseUpdate:
+      properties:
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      title: CourseUpdate
+    GeneratedTestQuestion:
+      properties:
+        question:
+          type: string
+          title: Question
+        options:
+          items:
+            type: string
+          type: array
+          title: Options
+        correct_answer:
+          type: string
+          title: Correct Answer
+        source_lesson_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Source Lesson Id
+      type: object
+      required:
+      - question
+      - options
+      - correct_answer
+      title: GeneratedTestQuestion
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LessonCreate:
+      properties:
+        title:
+          type: string
+          title: Title
+        content:
+          type: string
+          title: Content
+        course_id:
+          type: integer
+          title: Course Id
+        test_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Test Id
+      type: object
+      required:
+      - title
+      - content
+      - course_id
+      title: LessonCreate
+    LessonResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        content:
+          type: string
+          title: Content
+        course_id:
+          type: integer
+          title: Course Id
+        test_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Test Id
+      type: object
+      required:
+      - id
+      - title
+      - content
+      - course_id
+      title: LessonResponse
+    LessonStudentResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        content:
+          type: string
+          title: Content
+        course_id:
+          type: integer
+          title: Course Id
+        test_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Test Id
+      type: object
+      required:
+      - id
+      - title
+      - content
+      - course_id
+      title: LessonStudentResponse
+    LessonUpdate:
+      properties:
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+        test_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Test Id
+      type: object
+      title: LessonUpdate
+    MyCourseResponse:
+      properties:
+        course:
+          $ref: '#/components/schemas/CourseStudentResponse'
+        progress:
+          type: number
+          title: Progress
+      type: object
+      required:
+      - course
+      - progress
+      title: MyCourseResponse
+    PersonalTestGenerateRequest:
+      properties:
+        course_id:
+          type: integer
+          title: Course Id
+        questions_count:
+          type: integer
+          title: Questions Count
+          default: 5
+      type: object
+      required:
+      - course_id
+      title: PersonalTestGenerateRequest
+    PersonalTestGenerateResponse:
+      properties:
+        course_id:
+          type: integer
+          title: Course Id
+        based_on_lessons:
+          items:
+            type: integer
+          type: array
+          title: Based On Lessons
+        questions:
+          items:
+            $ref: '#/components/schemas/GeneratedTestQuestion'
+          type: array
+          title: Questions
+      type: object
+      required:
+      - course_id
+      - based_on_lessons
+      - questions
+      title: PersonalTestGenerateResponse
+    TestAnswerSubmit:
+      properties:
+        answer:
+          type: string
+          title: Answer
+      type: object
+      required:
+      - answer
+      title: TestAnswerSubmit
+    TestCreate:
+      properties:
+        question:
+          type: string
+          title: Question
+        options:
+          items:
+            type: string
+          type: array
+          title: Options
+        correct_answer:
+          type: string
+          title: Correct Answer
+      type: object
+      required:
+      - question
+      - options
+      - correct_answer
+      title: TestCreate
+    TestResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        question:
+          type: string
+          title: Question
+        options:
+          items:
+            type: string
+          type: array
+          title: Options
+        correct_answer:
+          type: string
+          title: Correct Answer
+      type: object
+      required:
+      - id
+      - question
+      - options
+      - correct_answer
+      title: TestResponse
+    TestResultHistory:
+      properties:
+        test_id:
+          type: integer
+          title: Test Id
+        question:
+          type: string
+          title: Question
+        your_answer:
+          type: string
+          title: Your Answer
+        is_correct:
+          type: boolean
+          title: Is Correct
+        submitted_at:
+          type: string
+          format: date-time
+          title: Submitted At
+      type: object
+      required:
+      - test_id
+      - question
+      - your_answer
+      - is_correct
+      - submitted_at
+      title: TestResultHistory
+    TestResultResponse:
+      properties:
+        test_id:
+          type: integer
+          title: Test Id
+        is_correct:
+          type: boolean
+          title: Is Correct
+        correct_answer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correct Answer
+      type: object
+      required:
+      - test_id
+      - is_correct
+      title: TestResultResponse
+    TestStudentResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        question:
+          type: string
+          title: Question
+        options:
+          items:
+            type: string
+          type: array
+          title: Options
+      type: object
+      required:
+      - id
+      - question
+      - options
+      title: TestStudentResponse
+    TestUpdate:
+      properties:
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+        options:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Options
+        correct_answer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Correct Answer
+      type: object
+      title: TestUpdate
+    UserCreate:
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+      type: object
+      required:
+      - username
+      - password
+      title: UserCreate
+    UserResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        username:
+          type: string
+          title: Username
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        is_active:
+          type: boolean
+          title: Is Active
+        is_superuser:
+          type: boolean
+          title: Is Superuser
+      type: object
+      required:
+      - id
+      - username
+      - is_active
+      - is_superuser
+      title: UserResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          scopes: {}
+          tokenUrl: /api/v1/auth/login

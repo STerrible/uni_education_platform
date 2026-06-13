@@ -41,6 +41,19 @@ export async function registerUser(payload) {
 
 export const fetchCourses = async () => (await api.get('/student/courses')).data;
 export const fetchMyCourses = async () => (await api.get('/student/my-courses')).data;
-export const fetchCourseDetails = async (courseId) => (await api.get(`/student/courses/${courseId}`)).data;
-export const enrollCourse = async (courseId) => (await api.post(`/student/courses/${courseId}/enroll`)).data;
+export const fetchCourseDetails = async (courseId) =>
+  (await api.get(`/student/courses/${courseId}`)).data;
+export const enrollCourse = async (courseId) =>
+  (await api.post(`/student/courses/${courseId}/enroll`)).data;
 export const fetchTestHistory = async () => (await api.get('/student/test-history')).data;
+export const fetchLesson = async (lessonId) => (await api.get(`/student/lessons/${lessonId}`)).data;
+export const fetchTest = async (testId) => (await api.get(`/student/tests/${testId}`)).data;
+export const submitTest = async (testId, answer) =>
+  (await api.post(`/student/tests/${testId}/submit`, { answer })).data;
+export const generatePersonalTest = async (courseId, questionsCount) =>
+  (
+    await api.post('/student/personal-tests/generate', {
+      course_id: courseId,
+      questions_count: questionsCount,
+    })
+  ).data;

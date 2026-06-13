@@ -1,24 +1,38 @@
 import { useEffect, useMemo, useState } from 'react';
 import CourseCard from '../components/CourseCard.jsx';
-import { enrollCourse, fetchCourses, getErrorMessage } from '../api/client';
+import { enrollCourse, fetchCourses, fetchMyCourses, getErrorMessage } from '../api/client';
 
 export default function Courses({ authenticated }) {
   const [courses, setCourses] = useState([]);
   const [enrolledIds, setEnrolledIds] = useState(() => new Set());
-  const [status, setStatus] = useState('Загрузка курсов...');
+  const [status, setStatus] = useState('Загрузка курсов…');
 
   useEffect(() => {
     let active = true;
-    fetchCourses()
-      .then((data) => {
-        if (active) {
-          setCourses(data);
-          setStatus(data.length ? '' : 'Курсы пока не добавлены');
+    const loadCourses = async () => {
+      try {
+        const promises = [fetchCourses()];
+        if (authenticated) {
+          promises.push(fetchMyCourses());
         }
-      })
-      .catch((error) => active && setStatus(getErrorMessage(error)));
-    return () => { active = false; };
-  }, []);
+        const [allCourses, myCourses] = await Promise.all(promises);
+        if (!active) return;
+
+        setCourses(allCourses);
+        if (myCourses) {
+          const ids = new Set(myCourses.map((item) => item.course.id));
+          setEnrolledIds(ids);
+        }
+        setStatus(allCourses.length ? '' : 'Курсы пока не добавлены');
+      } catch (error) {
+        if (active) setStatus(getErrorMessage(error));
+      }
+    };
+    loadCourses();
+    return () => {
+      active = false;
+    };
+  }, [authenticated]);
 
   const sortedCourses = useMemo(
     () => [...courses].sort((a, b) => a.title.localeCompare(b.title, 'ru')),
@@ -42,10 +56,19 @@ export default function Courses({ authenticated }) {
   return (
     <section className="panel">
       <h1>Каталог курсов</h1>
-      {status && <p role="status" className="status">{status}</p>}
+      {status && (
+        <p role="status" className="status">
+          {status}
+        </p>
+      )}
       <div className="cards">
         {sortedCourses.map((course) => (
-          <CourseCard key={course.id} course={course} enrolled={enrolledIds.has(course.id)} onEnroll={handleEnroll} />
+          <CourseCard
+            key={course.id}
+            course={course}
+            enrolled={enrolledIds.has(course.id)}
+            onEnroll={handleEnroll}
+          />
         ))}
       </div>
     </section>

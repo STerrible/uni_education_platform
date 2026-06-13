@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { getErrorMessage, loginUser, registerUser } from '../api/client';
 
 const initialForm = { username: '', password: '', first_name: '', last_name: '' };
@@ -18,7 +18,12 @@ export default function Login({ auth }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const updateField = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  if (auth.authenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const updateField = (event) =>
+    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
 
   const submit = async (event) => {
     event.preventDefault();
@@ -45,18 +50,39 @@ export default function Login({ auth }) {
     <section className="panel narrow">
       <h1>{mode === 'login' ? 'Вход' : 'Регистрация'}</h1>
       <form onSubmit={submit} noValidate>
-        <label>Логин<input name="username" value={form.username} onChange={updateField} /></label>
-        <label>Пароль<input name="password" type="password" value={form.password} onChange={updateField} /></label>
+        <label>
+          Логин
+          <input name="username" value={form.username} onChange={updateField} />
+        </label>
+        <label>
+          Пароль
+          <input name="password" type="password" value={form.password} onChange={updateField} />
+        </label>
         {mode === 'register' && (
           <div className="grid two">
-            <label>Имя<input name="first_name" value={form.first_name} onChange={updateField} /></label>
-            <label>Фамилия<input name="last_name" value={form.last_name} onChange={updateField} /></label>
+            <label>
+              Имя
+              <input name="first_name" value={form.first_name} onChange={updateField} />
+            </label>
+            <label>
+              Фамилия
+              <input name="last_name" value={form.last_name} onChange={updateField} />
+            </label>
           </div>
         )}
-        {error && <p role="alert" className="error">{error}</p>}
-        <button className="primary" disabled={loading}>{loading ? 'Отправка...' : 'Продолжить'}</button>
+        {error && (
+          <p role="alert" className="error">
+            {error}
+          </p>
+        )}
+        <button className="primary" disabled={loading}>
+          {loading ? 'Отправка...' : 'Продолжить'}
+        </button>
       </form>
-      <button className="link-button" onClick={() => setMode(mode === 'login' ? 'register' : 'login')}>
+      <button
+        className="link-button"
+        onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+      >
         {mode === 'login' ? 'Создать аккаунт' : 'Уже есть аккаунт'}
       </button>
     </section>
